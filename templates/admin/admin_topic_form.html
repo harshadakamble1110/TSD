@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if topic else 'Add' }} Topic — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_topics') }}">Topics</a> / {{ 'Edit' if topic else 'Add' }}</nav>
+<h1 class="page-title">{{ 'Edit' if topic else 'Add' }} Topic</h1>
+<div class="form-card" style="max-width: 600px;">
+    <form method="post" action="{{ url_for('admin_topic_edit', topic_id=topic.id) if topic else url_for('admin_topic_add') }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="course_id">Course</label>
+            <select id="course_id" name="course_id" required>
+                {% for co in courses %}
+                <option value="{{ co.id }}" {% if topic and topic.course_id == co.id %}selected{% elif selected_course_id and co.id == selected_course_id %}selected{% endif %}>{{ co.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" value="{{ topic.title if topic else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="order">Order</label>
+            <input type="number" id="order" name="order" value="{{ topic.order if topic else 0 }}">
+        </div>
+        <div class="form-group">
+            <label>Video</label>
+            <div style="margin-bottom: 0.5rem;">
+                <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Option 1: Upload Video File</label>
+                <input type="file" id="video_file" name="video_file" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo,video/x-matroska" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface2); color: var(--text);">
+                <small style="color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                    Supported formats: MP4, WebM, OGG, MOV, AVI, MKV (Max: 500MB)
+                </small>
+            </div>
+            <div style="margin-top: 1rem; text-align: center; color: var(--text-muted); font-weight: 600;">OR</div>
+            <div style="margin-top: 0.5rem;">
+                <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Option 2: Video URL (YouTube, Vimeo, etc.)</label>
+                <input type="text" id="video_url" name="video_url" value="{{ topic.video_url if topic and not topic.video_url.startswith('/static/uploads/videos/') else '' }}" placeholder="https://www.youtube.com/embed/... or https://...">
+                <small style="color: var(--text-muted); font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                    Enter embed URL (e.g., YouTube embed link)
+                </small>
+            </div>
+            {% if topic and topic.video_url %}
+            <div style="margin-top: 1rem; padding: 0.75rem; background: var(--surface2); border-radius: var(--radius); border: 1px solid var(--border);">
+                <strong style="color: var(--text-muted); font-size: 0.9rem;">Current Video:</strong>
+                <div style="margin-top: 0.25rem; color: var(--accent); font-size: 0.85rem;">
+                    {% if topic.video_url.startswith('/static/uploads/videos/') %}
+                        📁 Uploaded file: {{ topic.video_url.split('/')[-1] }}
+                    {% else %}
+                        🔗 URL: {{ topic.video_url[:60] }}{% if topic.video_url|length > 60 %}...{% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="notes_content">Notes content</label>
+            <textarea id="notes_content" name="notes_content" rows="5">{{ topic.notes_content if topic else '' }}</textarea>
+        </div>
+        {% if not topic %}
+        <div class="form-group">
+            <label><input type="checkbox" name="is_test_topic" value="1"> This topic is the Course Test (stores test questions)</label>
+        </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('admin_topics') }}" class="btn btn-secondary" style="margin-left: 0.5rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

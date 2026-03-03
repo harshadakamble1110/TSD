@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Student Data — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Admin Home</a> / Student Data</nav>
+<h1 class="page-title">Student Data</h1>
+
+<div class="admin-search-bar" style="margin-bottom: 1.5rem;">
+    <form method="get" action="{{ url_for('admin_students') }}" class="search-form">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search by name, student ID, or username..." class="search-input">
+        <select name="status" class="search-select">
+            <option value="">All Status</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+        </select>
+        <button type="submit" class="search-btn">Search</button>
+    </form>
+</div>
+
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>DOB</th>
+                <th>Courses</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in student_data %}
+            {% set student = data.student %}
+            {% set detail = data.detail %}
+            <tr>
+                <td><strong>{{ student.student_id or 'N/A' }}</strong></td>
+                <td>{{ student.full_name or student.username }}</td>
+                <td>{{ student.username }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ detail.phone if detail else '-' }}</td>
+                <td>{{ detail.date_of_birth.strftime('%Y-%m-%d') if detail and detail.date_of_birth else '-' }}</td>
+                <td>
+                    {% for course_info in data.courses %}
+                    <div style="margin-bottom: 0.25rem;">
+                        <strong>{{ course_info.course.name }}</strong> — 
+                        <span class="badge {% if course_info.status == 'completed' %}badge-success{% else %}badge-pending{% endif %}">
+                            {{ course_info.status }} ({{ course_info.progress }})
+                        </span>
+                    </div>
+                    {% endfor %}
+                </td>
+                <td>
+                    <button type="button" class="btn btn-secondary" onclick="showStudentDetails({{ student.id }}, '{{ student.username }}', '{{ student.password_hash[:20] }}...')" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">View Details</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal-overlay" id="studentModal">
+    <div class="modal-box" style="max-width: 500px;">
+        <h3 id="studentName"></h3>
+        <div id="studentInfo" style="margin-top: 1rem;"></div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('studentModal').classList.remove('active')">Close</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function showStudentDetails(id, username, passwordHash) {
+    document.getElementById('studentName').textContent = 'Student: ' + username;
+    document.getElementById('studentInfo').innerHTML = '<p><strong>Password Hash:</strong> ' + passwordHash + '</p>';
+    document.getElementById('studentModal').classList.add('active');
+}
+</script>
+{% endblock %}

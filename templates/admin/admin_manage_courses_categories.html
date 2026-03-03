@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Courses — Manage Content{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_manage_content') }}">Manage Content</a> / Courses</nav>
+<h1 class="page-title">Select Category</h1>
+<p style="color: var(--text-muted); margin-bottom: 1.5rem;">Same categories as on the student page. Click a category to manage its courses.</p>
+<div class="categories-grid">
+    {% for cat in categories %}
+    <a href="{{ url_for('admin_manage_courses_category', cat_id=cat.id) }}" class="category-card">
+        <div class="icon">{{ cat.icon or '📚' }}</div>
+        <h3>{{ cat.name }}</h3>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

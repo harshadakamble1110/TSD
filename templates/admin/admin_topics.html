@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Topics — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / Topics</nav>
+<h1 class="page-title">Topics</h1>
+<p>
+    <a href="{{ url_for('admin_topic_add') }}" class="btn btn-primary">Add Topic</a>
+    <form method="get" action="{{ url_for('admin_topics') }}" style="display: inline; margin-left: 1rem;">
+        <label>Course:</label>
+        <select name="course_id" onchange="this.form.submit()">
+            <option value="">All</option>
+            {% for co in courses %}
+            <option value="{{ co.id }}" {% if selected_course_id == co.id %}selected{% endif %}>{{ co.name }} ({{ co.category.name }})</option>
+            {% endfor %}
+        </select>
+    </form>
+</p>
+<div class="admin-table-wrap" style="margin-top: 1rem;">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Topic</th>
+                <th>Course</th>
+                <th>Order</th>
+                <th>Quiz</th>
+                <th>Test</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in topics %}
+            <tr>
+                <td>{{ t.title }}</td>
+                <td>{{ t.course.name }}</td>
+                <td>{{ t.order }}</td>
+                <td>{{ 'Yes' if t.quiz_questions else 'No' }}</td>
+                <td>{{ 'Yes' if t.course_test_questions else 'No' }}</td>
+                <td>
+                    <a href="{{ url_for('admin_topic_edit', topic_id=t.id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Edit</a>
+                    <form method="post" action="{{ url_for('admin_topic_delete', topic_id=t.id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;" onclick="return confirm('Delete this topic?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

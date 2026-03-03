@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Result — TECH Skills Development{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}">{{ course.name }}</a> / Result
+</nav>
+<div class="quiz-result-card">
+    <div class="score">{{ score_percent }}%</div>
+    <p class="message">Congratulations! You have got {{ score_percent }}%.</p>
+</div>
+<div class="result-list">
+    {% for r in results %}
+    <div class="result-item {% if r.correct %}correct{% else %}incorrect{% endif %}">
+        <p class="q-text">{{ r.question }}</p>
+        <p class="your-ans">Your answer: {{ r.options[r.selected_index] if r.selected_index is not none and r.options else 'Not answered' }}</p>
+        {% if not r.correct %}
+        <p class="correct-ans">Correct: {{ r.options[r.correct_index] }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+<div style="margin-top: 1.5rem;">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}" class="btn btn-primary">Back to Course</a>
+    {% if not is_course_test %}
+    {% if can_reattempt %}
+    <a href="{{ url_for('topic_quiz', topic_id=topic.id) }}" class="btn btn-secondary" style="margin-left: 0.5rem;">Reattempt Quiz (Score < 40%)</a>
+    {% elif next_step == 'course_test' %}
+    <a href="{{ url_for('course_test', course_id=course.id) }}" class="btn btn-primary" style="margin-left: 0.5rem;">Next: Course Test</a>
+    {% elif next_topic and not next_topic.course_test_questions %}
+    <a href="{{ url_for('topic_video', topic_id=next_topic.id) }}" class="btn btn-primary" style="margin-left: 0.5rem;">Next Topic: {{ next_topic.title }}</a>
+    {% endif %}
+    {% endif %}
+    {% if is_course_test and next_step == 'certificate' %}
+    <a href="{{ url_for('certificate', course_id=course.id) }}" class="btn btn-primary" style="margin-left: 0.5rem;">View Certificate</a>
+    {% endif %}
+</div>
+{% endblock %}

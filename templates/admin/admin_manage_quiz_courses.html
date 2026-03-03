@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — Quiz{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_manage_content') }}">Manage Content</a> / <a href="{{ url_for('admin_manage_quiz') }}">Quiz Questions</a> / {{ category.name }}</nav>
+<h1 class="page-title">Select Course</h1>
+<div class="courses-grid">
+    {% for co in courses %}
+    <a href="{{ url_for('admin_manage_quiz_topics', cat_id=category.id, course_id=co.id) }}" class="course-card">
+        <div class="thumb"></div>
+        <div class="body"><h3>{{ co.name }}</h3><p class="meta">{{ co.duration_weeks }} hours</p></div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

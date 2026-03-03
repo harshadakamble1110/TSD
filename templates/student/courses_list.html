@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — TECH Skills Development{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('home') }}">Home</a> &rarr; {{ category.name }}
+</nav>
+<h1 class="page-title">{{ category.name }}</h1>
+<div class="courses-grid">
+    {% for course in courses %}
+    <a href="{{ url_for('course_detail', course_id=course.id) }}" class="course-card">
+        <div class="thumb"></div>
+        <div class="body">
+            <h3>{{ course.name }}</h3>
+            <p class="meta">{{ course.duration_weeks }} hours</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

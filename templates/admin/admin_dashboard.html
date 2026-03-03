@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Admin Home — TECH Skills Development{% endblock %}
+{% block content %}
+<div class="admin-home">
+    <div class="admin-hero">
+        <h1 class="page-title">Admin Panel</h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Manage your platform efficiently</p>
+    </div>
+    
+    <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+                <div class="stat-num">{{ total_students }}</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-content">
+                <div class="stat-num">{{ total_courses }}</div>
+                <div class="stat-label">Total Courses</div>
+            </div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <div class="stat-num">{{ total_enrollments }}</div>
+                <div class="stat-label">Total Enrollments</div>
+            </div>
+        </div>
+        <div class="admin-stat-card">
+            <div class="stat-icon">📁</div>
+            <div class="stat-content">
+                <div class="stat-num">{{ total_categories }}</div>
+                <div class="stat-label">Categories</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="admin-options-grid">
+        <a href="{{ url_for('admin_dashboard_stats') }}" class="admin-option-card">
+            <div class="option-icon">📊</div>
+            <h3>Dashboard</h3>
+            <p>View detailed statistics and analytics</p>
+        </a>
+        <a href="{{ url_for('admin_manage_content') }}" class="admin-option-card">
+            <div class="option-icon">⚙️</div>
+            <h3>Manage Content</h3>
+            <p>Categories, Courses, Topics, Questions</p>
+        </a>
+        <a href="{{ url_for('admin_complaints') }}" class="admin-option-card">
+            <div class="option-icon">📮</div>
+            <h3>Complaint Box</h3>
+            <p>View and resolve user complaints</p>
+        </a>
+        <a href="{{ url_for('admin_students') }}" class="admin-option-card">
+            <div class="option-icon">📋</div>
+            <h3>Student Data</h3>
+            <p>View student details, enrollments, progress</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

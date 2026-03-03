@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — Topics{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_manage_content') }}">Manage Content</a> / <a href="{{ url_for('admin_manage_topics') }}">Topics</a> / {{ category.name }}</nav>
+<h1 class="page-title">Select Course</h1>
+<p style="color: var(--text-muted); margin-bottom: 1.5rem;">Click a course to manage its topics.</p>
+<div class="courses-grid">
+    {% for co in courses %}
+    <a href="{{ url_for('admin_manage_topics_list', cat_id=category.id, course_id=co.id) }}" class="course-card">
+        <div class="thumb"></div>
+        <div class="body">
+            <h3>{{ co.name }}</h3>
+            <p class="meta">{{ co.duration_weeks }} hours</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Refer & Earn — TECH Skills Development{% endblock %}
+{% block content %}
+<div class="content-page">
+    <h1 class="page-title">Refer & Earn</h1>
+    <div class="content-section">
+        <h2>Invite Friends, Earn Rewards</h2>
+        <p>Share your unique referral code and earn rewards when your friends enroll in courses!</p>
+        <div class="referral-box">
+            <h3>Your Referral Code</h3>
+            <div class="referral-code">{{ current_user.student_id or current_user.username }}</div>
+            <p>Share this code with your friends. When they sign up using your code, you both get benefits!</p>
+        </div>
+        <h2>How It Works</h2>
+        <ol>
+            <li>Share your referral code with friends</li>
+            <li>They sign up and enroll in courses</li>
+            <li>You earn rewards for each successful referral</li>
+        </ol>
+    </div>
+</div>
+{% endblock %}

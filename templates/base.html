@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TECH Skills Development{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional animations */
+        @keyframes slideInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .animate-in {
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple-animation {
+            to { transform: scale(4); opacity: 0; }
+        }
+        
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    {% if current_user.is_authenticated and current_user.role == 'student' %}
+    <header class="main-header">
+        <div class="header-left">
+            <a href="{{ url_for('home') }}" class="tsd-logo">
+                <div class="tsd-symbol">TSD</div>
+                <div class="tsd-brand">
+                    <div class="tsd-brand-name">TECH Skills Development</div>
+                    <div class="tsd-brand-tagline">Empowering Future Tech Leaders</div>
+                </div>
+            </a>
+        </div>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('student_details') }}">My Profile</a>
+            <a href="{{ url_for('settings') }}">Settings</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+    </header>
+    {% endif %}
+    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+    <header class="admin-header">
+        <div class="header-left">
+            <a href="{{ url_for('admin_dashboard') }}" class="tsd-logo">
+                <div class="tsd-symbol">TSD</div>
+                <div class="tsd-brand">
+                    <div class="tsd-brand-name">TECH Skills Admin</div>
+                    <div class="tsd-brand-tagline">Management Portal</div>
+                </div>
+            </a>
+        </div>
+        <nav>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </nav>
+    </header>
+    {% endif %}
+
+    <main class="main-content">
+        <!-- Back Navigation -->
+        {% if request.endpoint != 'login' and request.endpoint != 'index' and request.endpoint != 'home' and request.endpoint != 'admin_dashboard' %}
+        <div class="page-header">
+            <button onclick="goBack()" class="back-nav">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </button>
+        </div>
+        {% endif %}
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, msg in messages %}
+                        <div class="flash flash-{{ category }}">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    {% if current_user.is_authenticated and current_user.role == 'student' %}
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TECH Skills Development</h3>
+                <p>Empowering learners with quality education</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('student_details') }}">My Profile</a>
+                <a href="{{ url_for('settings') }}">Settings</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="{{ url_for('complaint') }}">Customer Service</a>
+                <a href="{{ url_for('complaint') }}">Report Issue</a>
+            </div>
+            <div class="footer-section">
+                <h4>More</h4>
+                <a href="{{ url_for('about_us') }}">About Us</a>
+                <a href="{{ url_for('refer_earn') }}">Refer & Earn</a>
+                <a href="{{ url_for('downloads') }}">Downloads</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TECH Skills Development. All rights reserved.</p>
+            <div class="footer-developers">
+                <span>Developed by <strong>Harshada Kamble</strong> &amp; <strong>Harsh Kamble</strong></span>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <span class="social-icon">in</span>
+                    </a>
+                    <a href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+                        <span class="social-icon">IG</span>
+                    </a>
+                    <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="YouTube">
+                        <span class="social-icon">▶</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/advanced-ui.js') }}"></script>
+    <script>
+        // Enhanced back navigation function
+        function goBack() {
+            // Go back through browser history
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // If no history, go to home page
+                window.location.href = '{{ url_for("home") }}';
+            }
+        }
+        
+        // Add keyboard shortcut for back navigation
+        document.addEventListener('keydown', function(event) {
+            // Alt + Left Arrow for back navigation
+            if (event.altKey && event.key === 'ArrowLeft') {
+                event.preventDefault();
+                goBack();
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if course else 'Add' }} Course — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_courses') }}">Courses</a> / {{ 'Edit' if course else 'Add' }}</nav>
+<h1 class="page-title">{{ 'Edit' if course else 'Add' }} Course</h1>
+<div class="form-card" style="max-width: 600px;">
+    <form method="post" action="{{ url_for('admin_course_edit', course_id=course.id) if course else url_for('admin_course_add') }}">
+        <div class="form-group">
+            <label for="category_id">Category</label>
+            <select id="category_id" name="category_id" required>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if course and course.category_id == c.id %}selected{% elif selected_category_id and c.id == selected_category_id %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" value="{{ course.name if course else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="slug">Slug</label>
+            <input type="text" id="slug" name="slug" value="{{ course.slug if course else '' }}" placeholder="auto from name">
+        </div>
+        <div class="form-group">
+            <label for="duration_weeks">Duration (hours)</label>
+            <input type="number" id="duration_weeks" name="duration_weeks" value="{{ course.duration_weeks if course else 10 }}" min="1">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description">{{ course.description if course else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="syllabus_text">Syllabus</label>
+            <textarea id="syllabus_text" name="syllabus_text" rows="5">{{ course.syllabus_text if course else '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{{ url_for('admin_courses') }}" class="btn btn-secondary" style="margin-left: 0.5rem;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

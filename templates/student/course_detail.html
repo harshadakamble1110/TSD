@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}{{ course.name }} — TECH Skills Development{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('home') }}">Home</a> &rarr;
+    <a href="{{ url_for('courses_list', category_slug=course.category.slug) }}">{{ course.category.name }}</a> &rarr;
+    {{ course.name }}
+</nav>
+<div class="course-detail-hero">
+    <h1>{{ course.name }}</h1>
+    <p class="duration">Duration: {{ course.duration_weeks }} hours</p>
+    <p class="syllabus">{{ course.syllabus_text or 'No syllabus added yet.' }}</p>
+    {% if enrolled %}
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}" class="btn btn-primary">Go to Course</a>
+    {% else %}
+    <button type="button" class="btn btn-primary" id="enrollBtn" data-course-id="{{ course.id }}">Enroll Now</button>
+    {% endif %}
+</div>
+
+<div class="modal-overlay" id="enrollModal">
+    <div class="modal-box">
+        <h3>Confirm Enrollment</h3>
+        <p>Are you sure you want to enroll in this course?</p>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="enrollCancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="enrollYes">Yes</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="profileRequiredModal">
+    <div class="modal-box">
+        <h3>Complete Your Profile</h3>
+        <p>Please complete your profile details (name, phone, address) first. These details will be shown on your certificate.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="profileModalClose">Cancel</button>
+            <a href="{{ url_for('student_details') }}" class="btn btn-primary">Complete Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function() {
+    var btn = document.getElementById('enrollBtn');
+    var modal = document.getElementById('enrollModal');
+    var profileModal = document.getElementById('profileRequiredModal');
+    var cancelBtn = document.getElementById('enrollCancel');
+    var yesBtn = document.getElementById('enrollYes');
+    var profileClose = document.getElementById('profileModalClose');
+    if (!btn || !modal) return;
+    
+    btn.addEventListener('click', function() {
+        fetch('/api/profile-complete')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.profile_complete) {
+                    modal.classList.add('active');
+                } else {
+                    profileModal.classList.add('active');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error checking profile:', error);
+                alert('Unable to check profile status. Please try again.');
+            });
+    });
+    
+    if (profileClose) {
+        profileClose.addEventListener('click', function() {
+            profileModal.classList.remove('active');
+        });
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+        });
+    }
+    
+    if (yesBtn) {
+        yesBtn.addEventListener('click', function() {
+            var courseId = btn.getAttribute('data-course-id');
+            fetch('/enroll/' + courseId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(function(data) {
+                modal.classList.remove('active');
+                if (data.ok) {
+                    window.location.href = '/my-course/' + courseId;
+                } else if (data.profile_complete === false) {
+                    profileModal.classList.add('active');
+                } else {
+                    alert('Enrollment failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(function(error) {
+                console.error('Error enrolling:', error);
+                alert('Unable to enroll. Please try again.');
+            });
+        });
+    }
+})();
+</script>
+{% endblock %}

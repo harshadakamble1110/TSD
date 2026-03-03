@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}About Us — TECH Skills Development{% endblock %}
+{% block content %}
+<div class="content-page">
+    <h1 class="page-title">About TECH Skills Development</h1>
+    <div class="content-section">
+        <h2>Our Mission</h2>
+        <p>We are committed to providing high-quality, accessible education to learners worldwide. Our platform offers comprehensive courses designed to help you master new skills and advance your career.</p>
+        
+        <h2>What We Offer</h2>
+        <ul>
+            <li>Expert-led courses across multiple categories</li>
+            <li>Interactive learning with videos, notes, and quizzes</li>
+            <li>Progress tracking and certificates</li>
+            <li>Flexible learning at your own pace</li>
+        </ul>
+        
+        <h2>Contact Us</h2>
+        <p>For any inquiries, please use our <a href="{{ url_for('complaint') }}">Customer Service</a> form.</p>
+    </div>
+</div>
+{% endblock %}

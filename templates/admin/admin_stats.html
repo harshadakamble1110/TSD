@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Stats — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Admin Home</a> / Dashboard</nav>
+<h1 class="page-title">Dashboard Statistics</h1>
+<div class="admin-stats-grid">
+    <div class="admin-stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+            <div class="stat-num">{{ total_students }}</div>
+            <div class="stat-label">Total Students</div>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-content">
+            <div class="stat-num">{{ total_courses }}</div>
+            <div class="stat-label">Total Courses</div>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-content">
+            <div class="stat-num">{{ total_enrollments }}</div>
+            <div class="stat-label">Total Enrollments</div>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="stat-icon">📁</div>
+        <div class="stat-content">
+            <div class="stat-num">{{ total_categories }}</div>
+            <div class="stat-label">Categories</div>
+        </div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="stat-icon">📮</div>
+        <div class="stat-content">
+            <div class="stat-num">{{ pending_complaints }}</div>
+            <div class="stat-label">Pending Complaints</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Quiz Questions — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / Quiz Questions</nav>
+<h1 class="page-title">Quiz Questions (Topic)</h1>
+<form method="get" action="{{ url_for('admin_quiz_questions') }}" style="margin-bottom: 1.5rem;">
+    <label>Topic:</label>
+    <select name="topic_id" onchange="this.form.submit()">
+        <option value="">Select topic</option>
+        {% for t in topics %}
+        <option value="{{ t.id }}" {% if topic and topic.id == t.id %}selected{% endif %}>{{ t.title }} — {{ t.course.name }}</option>
+        {% endfor %}
+    </select>
+</form>
+{% if topic %}
+<p style="color: var(--text-muted);">Topic: <strong>{{ topic.title }}</strong> ({{ topic.course.name }})</p>
+<div id="quizQuestionsApp">
+    <div id="questionsList"></div>
+    <p style="margin-top: 1rem;"><button type="button" class="btn btn-secondary" id="addQuestion">Add Question</button></p>
+    <p style="margin-top: 1rem;"><button type="button" class="btn btn-primary" id="saveQuiz">Save All</button></p>
+</div>
+{% else %}
+<p style="color: var(--text-muted);">Select a topic to manage quiz questions.</p>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if topic %}
+<script>
+(function() {
+    var topicId = {{ topic.id }};
+    var questions = {{ questions|tojson|safe }};
+    var container = document.getElementById('questionsList');
+    function render() {
+        container.innerHTML = '';
+        questions.forEach(function(q, i) {
+            var div = document.createElement('div');
+            div.className = 'admin-question-item';
+            div.style.cssText = 'margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 8px;';
+            div.innerHTML = '<p><strong>Q' + (i+1) + '</strong> ' + (q.question || '') + '</p>' +
+                '<p>Options: ' + (q.options || []).join(', ') + ' | Correct: ' + (q.correct_index + 1) + '</p>' +
+                '<button type="button" class="btn-edit-q" data-i="' + i + '">Edit</button> <button type="button" class="btn-del-q" data-i="' + i + '">Delete</button>';
+            container.appendChild(div);
+        });
+    }
+    document.getElementById('addQuestion').addEventListener('click', function() {
+        questions.push({ question: '', options: ['', ''], correct_index: 0 });
+        render();
+    });
+    container.addEventListener('click', function(e) {
+        var i = parseInt(e.target.getAttribute('data-i'), 10);
+        if (e.target.classList.contains('btn-del-q') && !isNaN(i)) {
+            questions.splice(i, 1);
+            render();
+        }
+        if (e.target.classList.contains('btn-edit-q') && !isNaN(i)) {
+            var q = questions[i];
+            var question = prompt('Question text:', q.question);
+            if (question !== null) q.question = question;
+            var opts = prompt('Options (one per line):', (q.options || []).join('\n'));
+            if (opts !== null) q.options = opts.split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
+            var cor = prompt('Correct option index (0-based):', q.correct_index);
+            if (cor !== null) q.correct_index = parseInt(cor, 10) || 0;
+            render();
+        }
+    });
+    document.getElementById('saveQuiz').addEventListener('click', function() {
+        fetch('/admin/quiz-questions/' + topicId + '/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ questions: questions })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+            if (data.ok) alert('Saved.'); else alert('Error');
+        });
+    });
+    render();
+})();
+</script>
+{% endif %}
+{% endblock %}

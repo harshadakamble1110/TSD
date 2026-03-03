@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Test Questions — Manage Content{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_manage_content') }}">Manage Content</a> / Test Questions</nav>
+<h1 class="page-title">Select Category</h1>
+<p style="color: var(--text-muted); margin-bottom: 1.5rem;">Category then Course then Test Questions.</p>
+<div class="categories-grid">
+    {% for cat in categories %}
+    <a href="{{ url_for('admin_manage_test_courses', cat_id=cat.id) }}" class="category-card">
+        <div class="icon">{{ cat.icon or '📚' }}</div>
+        <h3>{{ cat.name }}</h3>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

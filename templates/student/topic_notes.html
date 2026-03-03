@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Notes — {{ topic.title }}{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}">{{ course.name }}</a> / {{ topic.title }} / Notes
+</nav>
+<h1 class="page-title">{{ topic.title }} — Notes</h1>
+<div class="notes-content">
+{{ topic.notes_content or 'Notes for this topic will be added here. Key points and summaries will appear in this section.' }}
+</div>
+<div style="margin-top: 1.5rem;">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}" class="btn btn-secondary">Back to Course</a>
+    {% if topic.quiz_questions %}
+    <a href="{{ url_for('topic_quiz', topic_id=topic.id) }}" class="btn btn-primary" style="margin-left: 0.5rem;">Next: Take Quiz</a>
+    {% endif %}
+</div>
+{% endblock %}

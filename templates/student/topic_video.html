@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Video — {{ topic.title }}{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}">{{ course.name }}</a> / {{ topic.title }} / Video
+</nav>
+<h1 class="page-title">{{ topic.title }} — Video</h1>
+<div class="video-container">
+    {% if topic.video_url %}
+        {% if topic.video_url.startswith('/static/uploads/videos/') %}
+            {# Uploaded video file #}
+            <video controls style="width: 100%; height: auto; max-height: 70vh;" id="videoPlayer">
+                <source src="{{ topic.video_url }}" type="video/mp4">
+                <source src="{{ topic.video_url }}" type="video/webm">
+                <source src="{{ topic.video_url }}" type="video/ogg">
+                Your browser does not support the video tag.
+            </video>
+        {% else %}
+            {# External video URL (YouTube, Vimeo, etc.) #}
+            <iframe src="{{ topic.video_url }}" allowfullscreen title="Video" id="videoFrame"></iframe>
+        {% endif %}
+    {% else %}
+    <div class="video-placeholder">Video content for this topic. (Add video in admin.)</div>
+    {% endif %}
+</div>
+<div class="video-actions">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}" class="btn btn-secondary">← Back</a>
+    {% if topic.quiz_questions %}
+    <a href="{{ url_for('topic_quiz', topic_id=topic.id) }}" class="btn btn-primary">Next: Take Quiz →</a>
+    {% elif next_topic %}
+    <a href="{{ url_for('topic_video', topic_id=next_topic.id) }}" class="btn btn-primary">Next: {{ next_topic.title }} →</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Certificate — {{ course.name }}{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}">{{ course.name }}</a> / Certificate
+</nav>
+<div class="certificate-box" id="certificateBox">
+    <h1 class="certificate-title">Certificate of Completion</h1>
+    <p class="certificate-subtitle">This is to certify that</p>
+    <p class="certificate-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</p>
+    <p class="certificate-text">has completed the course</p>
+    <p class="certificate-course">{{ course.name }}</p>
+    <p class="certificate-text">Course Duration: {{ course.duration_weeks }} hours</p>
+    <p class="certificate-score">Score: {{ score_percent }}% — Grade: {{ grade }}</p>
+    <p class="certificate-footer">TECH Skills Development</p>
+</div>
+<p style="margin-top: 1.5rem;">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}" class="btn btn-secondary">Back to Course</a>
+    <a href="{{ url_for('certificate_download', course_id=course.id) }}" class="btn btn-primary" style="margin-left: 0.5rem;">Download PDF</a>
+</p>
+{% endblock %}

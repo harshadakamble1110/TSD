@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Course Test — {{ course.name }}{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}">{{ course.name }}</a> / Course Test
+</nav>
+<h1 class="page-title">Course Test: {{ course.name }}</h1>
+<p style="color: var(--text-muted); margin-bottom: 1.5rem;">20 multiple choice questions. Click Finish on the last question to submit.</p>
+<div class="quiz-container">
+    <div class="quiz-card" id="quizCard">
+        <p class="q-num">Question <span id="currentNum">1</span> of <span id="totalNum">{{ questions|length }}</span></p>
+        <p class="question" id="questionText"></p>
+        <div class="quiz-options" id="optionsContainer"></div>
+        <div class="quiz-nav">
+            <button type="button" class="btn btn-secondary" id="prevBtn" style="display:none;">Previous</button>
+            <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+            <button type="button" class="btn btn-primary" id="finishBtn" style="display:none;">Finish</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+var questions = {{ questions|tojson|safe }};
+var courseId = {{ course.id }};
+var submitUrl = "{{ url_for('course_test', course_id=course.id) }}";
+var resultUrl = "{{ url_for('course_test_result', course_id=course.id) }}";
+var isCourseTest = true;
+</script>
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}

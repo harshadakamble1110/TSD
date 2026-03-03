@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ course.name }} — My Course{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('home') }}">Home</a> / <a href="{{ url_for('courses_list', category_slug=course.category.slug) }}">{{ course.category.name }}</a> / {{ course.name }}
+</nav>
+<h1 class="page-title">{{ course.name }}</h1>
+<p style="color: var(--text-muted); margin-bottom: 1.5rem;">1. Introduction → 2. Core Concepts → 3. Advanced Ideas → 4. Course Test → 5. Certificate. Complete each step to unlock the next.</p>
+<div class="topics-list">
+    {% for topic in topics %}
+    <div class="topic-item" data-topic-id="{{ topic.id }}">
+        <div class="topic-head" data-expand>
+            <h4>
+                {% if topic.id in completed_ids %}
+                <span class="badge">Done</span> {{ topic.title }}
+                {% elif loop.index0 == 0 %}
+                {{ topic.title }}
+                {% elif topics[loop.index0 - 1].id in completed_ids %}
+                {{ topic.title }}
+                {% else %}
+                <span class="locked">Locked: {{ topic.title }}</span>
+                {% endif %}
+            </h4>
+        </div>
+        <div class="topic-body">
+            {% if topic.id in completed_ids or (loop.index0 == 0) or (loop.index0 > 0 and topics[loop.index0 - 1].id in completed_ids) %}
+            {% if topic.course_test_questions %}
+            <div class="topic-links">
+                <a href="{{ url_for('course_test', course_id=course.id) }}" class="topic-link">Course Test (20 questions)</a>
+            </div>
+            {% elif topic.title.lower() == 'certificate' or topic.title.lower().startswith('certificate') %}
+            <div class="topic-links">
+                <a href="{{ url_for('certificate', course_id=course.id) }}" class="topic-link">View / Download Certificate</a>
+            </div>
+            {% else %}
+            <div class="topic-links">
+                {% if topic.video_url %}
+                <a href="{{ url_for('topic_video', topic_id=topic.id) }}" class="topic-link">Video</a>
+                {% endif %}
+                {% if topic.notes_content %}
+                <a href="{{ url_for('topic_notes', topic_id=topic.id) }}" class="topic-link">Notes</a>
+                {% endif %}
+                {% if topic.quiz_questions %}
+                <a href="{{ url_for('topic_quiz', topic_id=topic.id) }}" class="topic-link">Quiz</a>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <p class="locked">Complete the previous topic to unlock.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.topic-head[data-expand]').forEach(function(head) {
+    head.addEventListener('click', function() {
+        var item = this.closest('.topic-item');
+        item.classList.toggle('expanded');
+    });
+});
+</script>
+{% endblock %}

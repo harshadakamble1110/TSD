@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Home — TECH Skills Development{% endblock %}
+{% block content %}
+<!-- Enhanced Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to TECH Skills Development</h1>
+        <p class="hero-subtitle">Master new skills with our comprehensive courses. Learn at your own pace and unlock your potential.</p>
+        <div class="search-bar-container">
+            <form method="get" action="{{ url_for('home') }}" class="search-form">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search courses..." class="search-input" autocomplete="off">
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i> Search</button>
+            </form>
+        </div>
+    </div>
+    <!-- Floating decorative elements -->
+    <div class="floating-elements">
+        <div class="float-element float-1">🚀</div>
+        <div class="float-element float-2">💡</div>
+        <div class="float-element float-3">🎯</div>
+        <div class="float-element float-4">📚</div>
+    </div>
+</div>
+
+{% if search_query and courses %}
+<div class="search-results-section">
+    <h2 class="section-title">Search Results for "{{ search_query }}"</h2>
+    <div class="courses-grid">
+        {% for course in courses %}
+        <a href="{{ url_for('course_detail', course_id=course.id) }}" class="course-card">
+            <div class="course-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="course-body">
+                <h3>{{ course.name }}</h3>
+                <p class="course-meta"><i class="fas fa-clock"></i> {{ course.duration_weeks }} hours • <i class="fas fa-folder"></i> {{ course.category.name }}</p>
+                <div class="course-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% elif search_query %}
+<div class="search-results-section">
+    <div class="no-results">
+        <i class="fas fa-search"></i>
+        <h3>No courses found</h3>
+        <p>Try searching with different keywords</p>
+    </div>
+</div>
+{% endif %}
+
+{% if not search_query %}
+<div class="categories-section">
+    <h2 class="section-title">Browse by Category</h2>
+    <p class="section-description">Each course is independent — you can enroll in any course without completing another.</p>
+    <div class="categories-grid">
+        {% for cat in categories %}
+        <a href="{{ url_for('courses_list', category_slug=cat.slug) }}" class="category-card">
+            <div class="category-image">
+                <div class="category-icon">
+                    <i class="fas {{ cat.icon or 'fa-book' }}"></i>
+                </div>
+            </div>
+            <div class="category-content">
+                <h3>{{ cat.name }}</h3>
+                <div class="category-stats">
+                    <span class="course-count">{{ cat.courses.count() }} courses</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Featured Courses Section -->
+<div class="featured-section">
+    <h2 class="section-title">Featured Courses</h2>
+    <div class="featured-courses">
+        <div class="featured-card">
+            <div class="featured-badge">Popular</div>
+            <div class="featured-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <h3>Web Development</h3>
+            <p>Learn modern web technologies</p>
+        </div>
+        <div class="featured-card">
+            <div class="featured-badge">New</div>
+            <div class="featured-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <h3>Data Science</h3>
+            <p>Master data analysis and ML</p>
+        </div>
+        <div class="featured-card">
+            <div class="featured-badge">Trending</div>
+            <div class="featured-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3>Mobile Development</h3>
+            <p>Build amazing mobile apps</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

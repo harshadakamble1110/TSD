@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Search Results — TECH Skills Development{% endblock %}
+{% block content %}
+<div class="hero-section">
+    <h1 class="hero-title">Search Results</h1>
+    <div class="search-bar-container">
+        <form method="get" action="{{ url_for('search') }}" class="search-form">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search courses..." class="search-input" autocomplete="off">
+            <button type="submit" class="search-btn">🔍 Search</button>
+        </form>
+    </div>
+</div>
+
+{% if query and courses %}
+<div class="search-results-section">
+    <h2 class="section-title">Search Results for "{{ query }}"</h2>
+    <div class="courses-grid">
+        {% for course in courses %}
+        <a href="{{ url_for('course_detail', course_id=course.id) }}" class="course-card">
+            <div class="thumb"></div>
+            <div class="body">
+                <h3>{{ course.name }}</h3>
+                <p class="meta">{{ course.duration_weeks }} hours • {{ course.category.name }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% elif query %}
+<div class="search-results-section">
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No courses found for "{{ query }}".</p>
+</div>
+{% else %}
+<div class="search-results-section">
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">Please enter a search query.</p>
+</div>
+{% endif %}
+{% endblock %}

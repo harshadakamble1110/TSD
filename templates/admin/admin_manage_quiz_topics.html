@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ course.name }} — Quiz{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_manage_content') }}">Manage Content</a> / <a href="{{ url_for('admin_manage_quiz') }}">Quiz</a> / <a href="{{ url_for('admin_manage_quiz_courses', cat_id=category.id) }}">{{ category.name }}</a> / {{ course.name }}</nav>
+<h1 class="page-title">Select Topic (for quiz questions)</h1>
+<div class="admin-table-wrap">
+    <table class="admin-table">
+        <thead><tr><th>Topic</th><th>Order</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for t in topics %}
+            <tr>
+                <td>{{ t.title }}</td>
+                <td>{{ t.order }}</td>
+                <td><a href="{{ url_for('admin_manage_quiz_questions', cat_id=category.id, course_id=course.id, topic_id=t.id) }}" class="btn btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Manage Quiz Questions</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

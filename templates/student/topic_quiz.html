@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Quiz — {{ topic.title }}{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{ url_for('enrolled_course', course_id=course.id) }}">{{ course.name }}</a> / {{ topic.title }} / Quiz
+</nav>
+<h1 class="page-title">Quiz: {{ topic.title }}</h1>
+<div class="quiz-container">
+    <div class="quiz-card" id="quizCard">
+        <p class="q-num">Question <span id="currentNum">1</span> of <span id="totalNum">{{ questions|length }}</span></p>
+        <p class="question" id="questionText"></p>
+        <div class="quiz-options" id="optionsContainer"></div>
+        <div class="quiz-nav">
+            <button type="button" class="btn btn-secondary" id="prevBtn" style="display:none;">Previous</button>
+            <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+            <button type="button" class="btn btn-primary" id="finishBtn" style="display:none;">Finish</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>var questions={{ questions|tojson|safe }};var resultUrl="{{ url_for('topic_quiz_result', topic_id=topic.id) }}";var quizUrl="{{ url_for('topic_quiz', topic_id=topic.id) }}";</script>
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}

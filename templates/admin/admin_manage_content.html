@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Manage Content — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / Manage Content</nav>
+<h1 class="page-title">Manage Content</h1>
+<p style="color: var(--text-muted); margin-bottom: 2rem;">Choose what to manage. Flow matches the student panel: Categories → Courses → Topics → Quiz / Test.</p>
+<div class="manage-content-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem;">
+    <a href="{{ url_for('admin_manage_categories') }}" class="manage-content-card">
+        <span class="manage-icon">📁</span>
+        <h3>Categories</h3>
+        <p>Add, edit, delete categories</p>
+    </a>
+    <a href="{{ url_for('admin_manage_courses') }}" class="manage-content-card">
+        <span class="manage-icon">📚</span>
+        <h3>Courses</h3>
+        <p>Categories first, then courses</p>
+    </a>
+    <a href="{{ url_for('admin_manage_topics') }}" class="manage-content-card">
+        <span class="manage-icon">📄</span>
+        <h3>Topics</h3>
+        <p>Categories → Courses → Topics</p>
+    </a>
+    <a href="{{ url_for('admin_manage_quiz') }}" class="manage-content-card">
+        <span class="manage-icon">❓</span>
+        <h3>Quiz Questions</h3>
+        <p>By course-topic</p>
+    </a>
+    <a href="{{ url_for('admin_manage_test') }}" class="manage-content-card">
+        <span class="manage-icon">📝</span>
+        <h3>Test Questions</h3>
+        <p>By course-test</p>
+    </a>
+</div>
+{% endblock %}
