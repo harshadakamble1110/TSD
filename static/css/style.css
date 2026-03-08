@@ -121,10 +121,11 @@ body::before {
 
 /* Enhanced header with TSD branding */
 .main-header, .admin-header {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.95); 
+
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    padding: 1rem 2rem;
+    padding: 1px 0.5px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -139,21 +140,21 @@ body::before {
 .tsd-logo {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: -30px;
     text-decoration: none;
-    transition: all 0.3s ease;
+    /*transition: all 0.3s ease;*/
 }
 
 .tsd-symbol {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #fecfef 100%);
-    border-radius: 20px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    margin: 0 auto 1.5rem;
+    margin: 10px auto 5px;
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -176,7 +177,7 @@ body::before {
     box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
 }
 
-.auth-symbol::before {
+ .auth-symbol::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -186,7 +187,7 @@ body::before {
     background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
-}
+} 
 
 .auth-symbol:hover {
     transform: translateY(-5px) scale(1.05);
@@ -205,7 +206,7 @@ body::before {
 }
 
 .tsd-brand-name {
-    font-size: 1.25rem;
+    font-size: 15px;
     font-weight: 800;
     color: var(--primary-dark);
     text-decoration: none;
@@ -701,12 +702,12 @@ body::before {
 
 /* Enhanced admin dashboard */
 .admin-home {
-    padding: 2rem 0;
+    padding: 1rem 0;
 }
 
 .admin-hero {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
     position: relative;
 }
 
@@ -2996,7 +2997,7 @@ margin-bottom: 2rem;
 }
 .admin-hero {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
 }
 .admin-stats-grid {
     display: grid;

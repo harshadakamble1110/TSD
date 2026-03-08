@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+{% block title %}Manage Videos — Admin{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_manage_content') }}">Manage Content</a> / Manage Videos</nav>
+<h1 class="page-title">Manage Videos</h1>
+<p style="color: var(--text-muted); margin-bottom: 2rem;">Add, edit, and delete video content for courses and topics.</p>
+
+<!-- Add Video Section -->
+<div class="admin-section">
+    <h2>Add New Video</h2>
+    <form method="post" action="{{ url_for('admin_manage_videos') }}" class="admin-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="course_id">Course *</label>
+                <select name="course_id" id="course_id" required onchange="updateTopics()">
+                    <option value="">Select Course</option>
+                    {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="topic_id">Topic (Optional)</label>
+                <select name="topic_id" id="topic_id">
+                    <option value="">Select Course First</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="title">Video Title *</label>
+            <input type="text" name="title" id="title" required placeholder="Enter video title">
+        </div>
+        <div class="form-group">
+            <label for="url">Video URL *</label>
+            <input type="url" name="url" id="url" required placeholder="https://www.youtube.com/watch?v=...">
+            <small>YouTube, Vimeo, or other video platform URLs are supported</small>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="duration_minutes">Duration (minutes)</label>
+                <input type="number" name="duration_minutes" id="duration_minutes" placeholder="e.g., 45">
+            </div>
+            <div class="form-group">
+                <label for="order">Order</label>
+                <input type="number" name="order" id="order" value="0" min="0">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" id="description" rows="3" placeholder="Optional video description"></textarea>
+        </div>
+        <button type="submit" class="admin-btn">Add Video</button>
+    </form>
+</div>
+
+<!-- Existing Videos Section -->
+<div class="admin-section">
+    <h2>Existing Videos</h2>
+    {% if videos %}
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Course</th>
+                    <th>Topic</th>
+                    <th>Duration</th>
+                    <th>URL</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for video in videos %}
+                <tr>
+                    <td>{{ video.title }}</td>
+                    <td>{{ video.course.name }}</td>
+                    <td>{{ video.topic.title if video.topic else 'General Course Video' }}</td>
+                    <td>{{ video.duration_minutes or '-' }} min</td>
+                    <td>
+                        <a href="{{ video.url }}" target="_blank" class="btn-link">View</a>
+                    </td>
+                    <td>
+                        <div class="actions-container">
+                            <button onclick="editVideo({{ video.id }})" class="btn-edit">Edit</button>
+                            <form method="post" action="{{ url_for('admin_delete_video', video_id=video.id) }}" style="display:inline-flex;" onsubmit="return confirm('Are you sure you want to delete this video?')">
+                                <button type="submit" class="btn-delete">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted);">No videos added yet.</p>
+    {% endif %}
+</div>
+
+<!-- Edit Video Modal (hidden by default) -->
+<div id="editModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Edit Video</h2>
+        <form id="editForm" method="post">
+            <input type="hidden" name="video_id" id="edit_video_id">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edit_course_id">Course *</label>
+                    <select name="course_id" id="edit_course_id" required onchange="updateEditTopics()">
+                        <option value="">Select Course</option>
+                        {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit_topic_id">Topic (Optional)</label>
+                    <select name="topic_id" id="edit_topic_id">
+                        <option value="">Select Course First</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="edit_title">Video Title *</label>
+                <input type="text" name="title" id="edit_title" required>
+            </div>
+            <div class="form-group">
+                <label for="edit_url">Video URL *</label>
+                <input type="url" name="url" id="edit_url" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edit_duration_minutes">Duration (minutes)</label>
+                    <input type="number" name="duration_minutes" id="edit_duration_minutes">
+                </div>
+                <div class="form-group">
+                    <label for="edit_order">Order</label>
+                    <input type="number" name="order" id="edit_order" min="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="edit_description">Description</label>
+                <textarea name="description" id="edit_description" rows="3"></textarea>
+            </div>
+            <button type="submit" class="admin-btn">Update Video</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Store course topics data
+const courseTopics = {{ course_topics_json|safe }};
+
+function updateTopics() {
+    const courseId = document.getElementById('course_id').value;
+    const topicSelect = document.getElementById('topic_id');
+    
+    topicSelect.innerHTML = '<option value="">No Topic (General Course Video)</option>';
+    
+    if (courseId && courseTopics[courseId]) {
+        courseTopics[courseId].forEach(topic => {
+            const option = document.createElement('option');
+            option.value = topic.id;
+            option.textContent = topic.title;
+            topicSelect.appendChild(option);
+        });
+    }
+}
+
+function updateEditTopics() {
+    const courseId = document.getElementById('edit_course_id').value;
+    const topicSelect = document.getElementById('edit_topic_id');
+    
+    topicSelect.innerHTML = '<option value="">No Topic (General Course Video)</option>';
+    
+    if (courseId && courseTopics[courseId]) {
+        courseTopics[courseId].forEach(topic => {
+            const option = document.createElement('option');
+            option.value = topic.id;
+            option.textContent = topic.title;
+            topicSelect.appendChild(option);
+        });
+    }
+}
+
+function editVideo(videoId) {
+    // Fetch video data and populate edit form
+    fetch(`/admin/videos/${videoId}/data`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('edit_video_id').value = data.id;
+            document.getElementById('edit_course_id').value = data.course_id;
+            document.getElementById('edit_title').value = data.title;
+            document.getElementById('edit_url').value = data.url;
+            document.getElementById('edit_duration_minutes').value = data.duration_minutes || '';
+            document.getElementById('edit_order').value = data.order || 0;
+            document.getElementById('edit_description').value = data.description || '';
+            
+            updateEditTopics();
+            if (data.topic_id) {
+                setTimeout(() => {
+                    document.getElementById('edit_topic_id').value = data.topic_id;
+                }, 100);
+            }
+            
+            document.getElementById('editModal').style.display = 'block';
+        });
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('editModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+
+<style>
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: var(--surface);
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.close:hover {
+    color: var(--text);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.btn-link {
+    color: var(--primary);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(79, 70, 229, 0.1);
+}
+
+.btn-link:hover {
+    background: rgba(79, 70, 229, 0.2);
+}
+
+.btn-edit {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-edit:hover {
+    background: var(--primary-dark);
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+}
+
+.actions-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    justify-content: flex-start;
+    min-height: 32px;
+}
+
+.actions-container form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.btn-edit, .btn-delete {
+    height: auto;
+    min-height: px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+</style>
+{% endblock %}

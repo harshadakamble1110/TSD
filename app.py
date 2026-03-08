@@ -12,7 +12,7 @@ import config as app_config
 from email_utils import email_enrolled_welcome
 from models import (
     db, User, StudentDetail, Category, Course, CourseTopic,
-    Enrollment, TopicProgress, TopicQuizAttempt, CourseTestAttempt, Complaint
+    Enrollment, TopicProgress, TopicQuizAttempt, CourseTestAttempt, Complaint, Video
 )
 from certificate_generator import generate_certificate_pdf
 import uuid
@@ -260,17 +260,30 @@ def enrolled_course(course_id):
     if not enrollment:
         flash("You are not enrolled in this course.", "error")
         return redirect(url_for("course_detail", course_id=course_id))
+    
     topics = CourseTopic.query.filter_by(course_id=course_id).order_by(CourseTopic.order).all()
     completed_ids = {
         p.topic_id for p in TopicProgress.query.filter_by(
             user_id=current_user.id, course_id=course_id
         ).all()
     }
+    
+    # Get videos for each topic
+    topic_videos = {}
+    for topic in topics:
+        videos = Video.query.filter_by(topic_id=topic.id, is_active=True).order_by(Video.order).all()
+        # Also get course-level videos (videos without specific topic)
+        if course_id not in topic_videos:
+            course_videos = Video.query.filter_by(course_id=course_id, topic_id=None, is_active=True).order_by(Video.order).all()
+            topic_videos['course'] = course_videos
+        topic_videos[topic.id] = videos
+    
     return render_template(
         "student/enrolled_course.html",
         course=course,
         topics=topics,
-        completed_ids=completed_ids
+        completed_ids=completed_ids,
+        topic_videos=topic_videos
     )
 
 
@@ -997,6 +1010,148 @@ def admin_manage_test_questions(cat_id, course_id):
         except Exception:
             pass
     return render_template("admin/admin_manage_test_questions.html", category=cat, course=course, test_topic=test_topic, questions=questions)
+
+
+# ---------- Admin: Videos (drill-down: Manage Content → Videos) ----------
+@app.route("/admin/manage/videos", methods=["GET", "POST"])
+@login_required
+@admin_required
+def admin_manage_videos():
+    if request.method == "POST":
+        course_id = request.form.get("course_id")
+        topic_id = request.form.get("topic_id") or None
+        title = request.form.get("title", "").strip()
+        url = request.form.get("url", "").strip()
+        description = request.form.get("description", "").strip()
+        duration_minutes = request.form.get("duration_minutes")
+        order = request.form.get("order", 0)
+        
+        if not course_id or not title or not url:
+            flash("Course, title, and URL are required!", "error")
+            return redirect(url_for("admin_manage_videos"))
+        
+        try:
+            course = Course.query.get(course_id)
+            if not course:
+                flash("Invalid course selected!", "error")
+                return redirect(url_for("admin_manage_videos"))
+            
+            # Handle topic validation
+            if topic_id:
+                topic = CourseTopic.query.get(topic_id)
+                if not topic or topic.course_id != int(course_id):
+                    flash("Invalid topic selected!", "error")
+                    return redirect(url_for("admin_manage_videos"))
+            
+            video = Video(
+                course_id=int(course_id),
+                topic_id=int(topic_id) if topic_id else None,
+                title=title,
+                url=url,
+                description=description or None,
+                duration_minutes=int(duration_minutes) if duration_minutes else None,
+                order=int(order)
+            )
+            db.session.add(video)
+            db.session.commit()
+            flash("Video added successfully!", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error adding video: {str(e)}", "error")
+        
+        return redirect(url_for("admin_manage_videos"))
+    
+    # GET request - show videos list and add form
+    videos = Video.query.order_by(Video.course_id, Video.topic_id, Video.order).all()
+    courses = Course.query.order_by(Course.name).all()
+    
+    # Prepare course topics data for JavaScript
+    course_topics = {}
+    for course in courses:
+        topics = CourseTopic.query.filter_by(course_id=course.id).order_by(CourseTopic.order).all()
+        course_topics[str(course.id)] = [{"id": t.id, "title": t.title} for t in topics]
+    
+    return render_template("admin/admin_manage_videos.html", 
+                         videos=videos, 
+                         courses=courses,
+                         course_topics_json=json.dumps(course_topics))
+
+
+@app.route("/admin/videos/<int:video_id>/data")
+@login_required
+@admin_required
+def admin_video_data(video_id):
+    video = Video.query.get_or_404(video_id)
+    return jsonify({
+        "id": video.id,
+        "course_id": video.course_id,
+        "topic_id": video.topic_id,
+        "title": video.title,
+        "url": video.url,
+        "description": video.description,
+        "duration_minutes": video.duration_minutes,
+        "order": video.order
+    })
+
+
+@app.route("/admin/videos/<int:video_id>/edit", methods=["POST"])
+@login_required
+@admin_required
+def admin_edit_video(video_id):
+    video = Video.query.get_or_404(video_id)
+    
+    course_id = request.form.get("course_id")
+    topic_id = request.form.get("topic_id") or None
+    title = request.form.get("title", "").strip()
+    url = request.form.get("url", "").strip()
+    description = request.form.get("description", "").strip()
+    duration_minutes = request.form.get("duration_minutes")
+    order = request.form.get("order", 0)
+    
+    if not course_id or not title or not url:
+        flash("Course, title, and URL are required!", "error")
+        return redirect(url_for("admin_manage_videos"))
+    
+    try:
+        # Handle topic validation
+        if topic_id:
+            topic = CourseTopic.query.get(topic_id)
+            if not topic or topic.course_id != int(course_id):
+                flash("Invalid topic selected!", "error")
+                return redirect(url_for("admin_manage_videos"))
+        
+        video.course_id = int(course_id)
+        video.topic_id = int(topic_id) if topic_id else None
+        video.title = title
+        video.url = url
+        video.description = description or None
+        video.duration_minutes = int(duration_minutes) if duration_minutes else None
+        video.order = int(order)
+        video.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        flash("Video updated successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error updating video: {str(e)}", "error")
+    
+    return redirect(url_for("admin_manage_videos"))
+
+
+@app.route("/admin/videos/<int:video_id>/delete", methods=["POST"])
+@login_required
+@admin_required
+def admin_delete_video(video_id):
+    video = Video.query.get_or_404(video_id)
+    try:
+        db.session.delete(video)
+        db.session.commit()
+        flash("Video deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting video: {str(e)}", "error")
+    
+    return redirect(url_for("admin_manage_videos"))
 
 
 # ---------- Admin: Categories (direct list - used from Manage Content) ----------

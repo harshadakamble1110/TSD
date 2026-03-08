@@ -120,3 +120,21 @@ class CourseTestAttempt(db.Model):
     score_percent = db.Column(db.Float, nullable=False)
     answers_json = db.Column(db.Text, nullable=True)
     attempted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Video(db.Model):
+    __tablename__ = "videos"
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey("course_topics.id"), nullable=True)
+    title = db.Column(db.String(200), nullable=False)
+    url = db.Column(db.String(500), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    duration_minutes = db.Column(db.Integer, nullable=True)
+    order = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    course = db.relationship("Course", backref=db.backref("videos", lazy="dynamic", cascade="all, delete-orphan"))
+    topic = db.relationship("CourseTopic", backref=db.backref("videos", lazy="dynamic", cascade="all, delete-orphan"))

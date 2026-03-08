@@ -6,6 +6,27 @@
 </nav>
 <h1 class="page-title">{{ course.name }}</h1>
 <p style="color: var(--text-muted); margin-bottom: 1.5rem;">1. Introduction → 2. Core Concepts → 3. Advanced Ideas → 4. Course Test → 5. Certificate. Complete each step to unlock the next.</p>
+
+<!-- Course-level Videos -->
+{% if topic_videos.course %}
+<div class="course-videos-section" style="margin-bottom: 2rem;">
+    <h3 style="margin-bottom: 1rem; color: var(--primary);">📹 Course Videos</h3>
+    <div class="videos-grid">
+        {% for video in topic_videos.course %}
+        <div class="video-card">
+            <h4>{{ video.title }}</h4>
+            {% if video.duration_minutes %}
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Duration: {{ video.duration_minutes }} minutes</p>
+            {% endif %}
+            {% if video.description %}
+            <p style="color: var(--text-muted); font-size: 0.9rem;">{{ video.description }}</p>
+            {% endif %}
+            <button onclick="openVideoPlayer('{{ video.url }}', '{{ video.title }}')" class="video-btn">Watch Video</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 <div class="topics-list">
     {% for topic in topics %}
     <div class="topic-item" data-topic-id="{{ topic.id }}">
@@ -34,6 +55,21 @@
             </div>
             {% else %}
             <div class="topic-links">
+                <!-- Topic Videos -->
+                {% if topic_videos[topic.id] %}
+                <div class="topic-videos" style="margin-bottom: 1rem;">
+                    <h5 style="margin-bottom: 0.5rem; color: var(--primary);">📹 Topic Videos</h5>
+                    {% for video in topic_videos[topic.id] %}
+                    <div class="topic-video-item" style="margin-bottom: 0.5rem;">
+                        <button onclick="openVideoPlayer('{{ video.url }}', '{{ video.title }}')" class="topic-link video-link">
+                            {{ video.title }} {% if video.duration_minutes %}({{ video.duration_minutes }} min){% endif %}
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Legacy video URL support -->
                 {% if topic.video_url %}
                 <a href="{{ url_for('topic_video', topic_id=topic.id) }}" class="topic-link">Video</a>
                 {% endif %}
@@ -60,6 +96,221 @@ document.querySelectorAll('.topic-head[data-expand]').forEach(function(head) {
         var item = this.closest('.topic-item');
         item.classList.toggle('expanded');
     });
+});
+</script>
+
+<!-- Video Player Modal -->
+<div id="videoModal" class="video-modal" style="display: none;">
+    <div class="video-modal-content">
+        <div class="video-modal-header">
+            <h3 id="videoTitle">Video Title</h3>
+            <span class="video-close" onclick="closeVideoPlayer()">&times;</span>
+        </div>
+        <div class="video-modal-body">
+            <div id="videoPlayerContainer">
+                <!-- Video player will be inserted here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.video-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.video-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.video-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.video-link {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white !important;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    display: inline-block;
+    margin: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.video-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(238, 90, 36, 0.3);
+}
+
+.video-modal {
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    animation: fadeIn 0.3s ease;
+}
+
+.video-modal-content {
+    background: var(--surface);
+    margin: 2% auto;
+    padding: 0;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.video-modal-header {
+    background: var(--primary);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.video-modal-body {
+    padding: 0;
+    background: #000;
+}
+
+.video-close {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.video-close:hover {
+    opacity: 0.7;
+}
+
+#videoPlayerContainer {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+#videoPlayerContainer iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .video-modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+    
+    .videos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function openVideoPlayer(videoUrl, videoTitle) {
+    const modal = document.getElementById('videoModal');
+    const titleElement = document.getElementById('videoTitle');
+    const playerContainer = document.getElementById('videoPlayerContainer');
+    
+    titleElement.textContent = videoTitle;
+    
+    // Convert video URL to embed format
+    let embedUrl = videoUrl;
+    
+    // YouTube URLs
+    if (videoUrl.includes('youtube.com/watch?v=')) {
+        const videoId = videoUrl.split('v=')[1].split('&')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autohide=1&showinfo=0`;
+    }
+    // YouTube short URLs
+    else if (videoUrl.includes('youtu.be/')) {
+        const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+        embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autohide=1&showinfo=0`;
+    }
+    // Vimeo URLs
+    else if (videoUrl.includes('vimeo.com/')) {
+        const videoId = videoUrl.split('vimeo.com/')[1].split('?')[0];
+        embedUrl = `https://player.vimeo.com/video/${videoId}?title=0&byline=0&portrait=0`;
+    }
+    
+    playerContainer.innerHTML = `
+        <iframe 
+            src="${embedUrl}" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    `;
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeVideoPlayer() {
+    const modal = document.getElementById('videoModal');
+    const playerContainer = document.getElementById('videoPlayerContainer');
+    
+    modal.style.display = 'none';
+    playerContainer.innerHTML = '';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('videoModal');
+    if (event.target == modal) {
+        closeVideoPlayer();
+    }
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeVideoPlayer();
+    }
 });
 </script>
 {% endblock %}
