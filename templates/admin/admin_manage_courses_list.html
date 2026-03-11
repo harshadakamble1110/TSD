@@ -15,10 +15,14 @@
                 <td>{{ co.name }}</td>
                 <td>{{ co.duration_weeks }} hours</td>
                 <td>
-                    <a href="{{ url_for('admin_course_edit', course_id=co.id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Edit</a>
-                    <form method="post" action="{{ url_for('admin_course_delete', course_id=co.id) }}" style="display: inline;">
-                        <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;" onclick="return confirm('Delete this course?');">Delete</button>
+                <td style="text-align: center; white-space: nowrap;">
+                    <div style="display: flex; justify-content: center; gap: 5px; align-items: center;">    
+                    <a href="{{ url_for('admin_course_edit', course_id=co.id) }}" class="btn btn-secondary" style="padding: 10px 10px; font-size: 0.85rem;">Edit</a>
+                    <form method="post" action="{{ url_for('admin_course_delete', course_id=co.id) }}" style="display: inline;" aligment="center">
+                        <button type="submit" class="btn btn-secondary" style="padding: 10px 10px; font-size: 0.85rem;" onclick="return confirm('Delete this course?');">Delete</button>
                     </form>
+                    </div>
+                    </td>
                 </td>
             </tr>
             {% endfor %}

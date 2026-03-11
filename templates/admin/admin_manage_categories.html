@@ -16,7 +16,7 @@
                 <td>{{ c.slug }}</td>
                 <td>{{ (c.description or '')[:50] }}{% if c.description and c.description|length > 50 %}...{% endif %}</td>
                 <td>
-                    <a href="{{ url_for('admin_category_edit', cat_id=c.id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Edit</a>
+                    <a href="{{ url_for('admin_category_edit', cat_id=c.id) }}" class="btn btn-secondary" style="padding: 10px 10px; font-size: 0.85rem;">Edit</a>
                     <form method="post" action="{{ url_for('admin_category_delete', cat_id=c.id) }}" style="display: inline;">
                         <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;" onclick="return confirm('Delete this category?');">Delete</button>
                     </form>
