@@ -16,11 +16,13 @@
                 <td>{{ t.order }}</td>
                 <td>{{ 'Yes' if t.quiz_questions else 'No' }}</td>
                 <td>{{ 'Yes' if t.course_test_questions else 'No' }}</td>
-                <td>
-                    <a href="{{ url_for('admin_topic_edit', topic_id=t.id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Edit</a>
-                    <form method="post" action="{{ url_for('admin_topic_delete', topic_id=t.id) }}" style="display: inline;">
+                <td class="actions-cell">
+                        <div class="actions-container" style="display: flex; gap: 5px; align-items: center;">
+                    <a href="{{ url_for('admin_topic_edit', topic_id=t.id) }}" class="btn btn-secondary" style="padding: 10px 10px; font-size: 0.85rem;">Edit</a>
+                    <form method="post" action="{{ url_for('admin_topic_delete', topic_id=t.id) }}" style="display: inline;" onsubmit="return confirm('Delete this category?');">
                         <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;" onclick="return confirm('Delete this topic?');">Delete</button>
                     </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}

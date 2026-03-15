@@ -1,6 +1,33 @@
 {% extends "base.html" %}
 {% block title %}Topics — Admin{% endblock %}
 {% block content %}
+<style>
+th.actions-header {
+    text-align: center !important;
+    vertical-align: middle !important;
+    width: 120px;
+    min-width: 120px;
+}
+
+td.actions-cell {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0.75rem 0.5rem !important;
+    width: 120px;
+    min-width: 120px;
+}
+
+.actions-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    justify-content: center;
+    min-height: 32px;
+    flex-wrap: nowrap;
+}
+</style>
+
 <nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / Topics</nav>
 <h1 class="page-title">Topics</h1>
 <p>
@@ -24,7 +51,7 @@
                 <th>Order</th>
                 <th>Quiz</th>
                 <th>Test</th>
-                <th>Actions</th>
+                <th class="actions-header">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -35,11 +62,13 @@
                 <td>{{ t.order }}</td>
                 <td>{{ 'Yes' if t.quiz_questions else 'No' }}</td>
                 <td>{{ 'Yes' if t.course_test_questions else 'No' }}</td>
-                <td>
-                    <a href="{{ url_for('admin_topic_edit', topic_id=t.id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Edit</a>
-                    <form method="post" action="{{ url_for('admin_topic_delete', topic_id=t.id) }}" style="display: inline;">
-                        <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;" onclick="return confirm('Delete this topic?');">Delete</button>
-                    </form>
+                <td class="actions-cell">
+                    <div class="actions-container">
+                        <a href="{{ url_for('admin_topic_edit', topic_id=t.id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Edit</a>
+                        <form method="post" action="{{ url_for('admin_topic_delete', topic_id=t.id) }}" style="display:inline;" onsubmit="return confirm('Delete this topic?');">
+                            <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Delete</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}

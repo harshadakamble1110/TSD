@@ -66,7 +66,7 @@
                     <th>Topic</th>
                     <th>Duration</th>
                     <th>URL</th>
-                    <th>Actions</th>
+                    <th class="actions-header">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -79,11 +79,11 @@
                     <td>
                         <a href="{{ video.url }}" target="_blank" class="btn-link">View</a>
                     </td>
-                    <td>
+                    <td class="actions-cell">
                         <div class="actions-container">
-                            <button onclick="editVideo({{ video.id }})" class="btn-edit">Edit</button>
-                            <form method="post" action="{{ url_for('admin_delete_video', video_id=video.id) }}" style="display:inline-flex;" onsubmit="return confirm('Are you sure you want to delete this video?')">
-                                <button type="submit" class="btn-delete">Delete</button>
+                            <a href="{{ url_for('admin_video_edit', video_id=video.id) }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Edit</a>
+                            <form method="post" action="{{ url_for('admin_delete_video', video_id=video.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this video?')">
+                                <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Delete</button>
                             </form>
                         </div>
                     </td>
@@ -273,62 +273,51 @@ window.onclick = function(event) {
     background: rgba(79, 70, 229, 0.2);
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.1));
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+th.actions-header {
+    text-align: center !important;
+    vertical-align: middle !important;
+    width: 120px;
+    min-width: 120px;
+}
+
+td.actions-cell {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0.75rem 0.5rem !important;
+    width: 120px;
+    min-width: 120px;
+}
+
 .actions-container {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     white-space: nowrap;
-    justify-content: flex-start;
-    min-height: 32px;
-}
-
-.actions-container form {
-    display: inline-flex;
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: none;
-}
-
-.btn-edit, .btn-delete {
-    height: auto;
-    min-height: 28px;
-    display: inline-flex;
-    align-items: center;
     justify-content: center;
-    vertical-align: middle;
-    line-height: 1;
-    white-space: nowrap;
-    margin: 0;
-    flex-shrink: 0;
-}
-
-.btn-edit {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.btn-edit:hover {
-    background: var(--primary-dark);
-}
-
-.btn-delete {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.btn-delete:hover {
-    background: #c82333;
+    min-height: 32px;
+    flex-wrap: nowrap;
 }
 
 @media (max-width: 768px) {

@@ -1,13 +1,40 @@
 {% extends "base.html" %}
 {% block title %}Categories — Manage Content{% endblock %}
 {% block content %}
+<style>
+th.actions-header {
+    text-align: center !important;
+    vertical-align: middle !important;
+    width: 120px;
+    min-width: 120px;
+}
+
+td.actions-cell {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0.75rem 0.5rem !important;
+    width: 120px;
+    min-width: 120px;
+}
+
+.actions-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    justify-content: center;
+    min-height: 32px;
+    flex-wrap: nowrap;
+}
+</style>
+
 <nav class="breadcrumb"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a> / <a href="{{ url_for('admin_manage_content') }}">Manage Content</a> / Categories</nav>
 <h1 class="page-title">Categories</h1>
 <p><a href="{{ url_for('admin_category_add') }}" class="btn btn-primary">Add Category</a></p>
 <div class="admin-table-wrap" style="margin-top: 1rem;">
     <table class="admin-table">
         <thead>
-            <tr><th>Name</th><th>Slug</th><th>Description</th><th>Actions</th></tr>
+            <tr><th>Name</th><th>Slug</th><th>Description</th><th class="actions-header">Actions</th></tr>
         </thead>
         <tbody>
             {% for c in categories %}
@@ -15,11 +42,13 @@
                 <td>{{ c.name }} {{ c.icon or '' }}</td>
                 <td>{{ c.slug }}</td>
                 <td>{{ (c.description or '')[:50] }}{% if c.description and c.description|length > 50 %}...{% endif %}</td>
-                <td>
-                    <a href="{{ url_for('admin_category_edit', cat_id=c.id) }}" class="btn btn-secondary" style="padding: 10px 10px; font-size: 0.85rem;">Edit</a>
-                    <form method="post" action="{{ url_for('admin_category_delete', cat_id=c.id) }}" style="display: inline;">
-                        <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;" onclick="return confirm('Delete this category?');">Delete</button>
-                    </form>
+                <td class="actions-cell">
+                    <div class="actions-container">
+                        <a href="{{ url_for('admin_category_edit', cat_id=c.id) }}" class="btn btn-secondary" style="padding: 10px 10px; font-size: 0.85rem;">Edit</a>
+                        <form method="post" action="{{ url_for('admin_category_delete', cat_id=c.id) }}" style="display:inline;" onsubmit="return confirm('Delete this category?');">
+                            <button type="submit" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.85rem;">Delete</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
