@@ -10,18 +10,30 @@
     <div class="profile-content-grid">
         <div class="profile-card profile-info-card">
             <div class="profile-avatar">
-                <div class="avatar-circle">{{ (current_user.full_name or current_user.username)[0].upper() }}</div>
+                <div class="avatar-circle {% if current_user.profile_photo %}has-photo{% endif %}" id="avatarContainer">
+                    {% if current_user.profile_photo %}
+                    <img src="{{ url_for('static', filename='uploads/profile_photos/' + current_user.profile_photo) }}" alt="Profile Photo" class="profile-photo" id="profilePhoto">
+                    {% else %}
+                    <span class="avatar-text">{{ (current_user.full_name or current_user.username)[0].upper() }}</span>
+                    {% endif %}
+                </div>
+                <div class="profile-photo-actions">
+                    <label for="profilePhotoUpload" class="profile-photo-edit-btn" id="profilePhotoLabel">
+                        {% if current_user.profile_photo %}Change Profile Photo{% else %}Edit Profile Photo{% endif %}
+                    </label>
+                    <input type="file" id="profilePhotoUpload" accept="image/jpg,image/jpeg,image/png" style="display: none;">
+                </div>
             </div>
-            <h2 class="profile-name">{{ current_user.full_name or current_user.username }}</h2>
-            <p class="profile-email">{{ current_user.email }}</p>
+            <h2 class="profile-name" style="color: #1e293b !important;">{{ current_user.full_name or current_user.username }}</h2>
+            <p class="profile-email" style="color: #64748b !important;">{{ current_user.email }}</p>
             {% if current_user.student_id %}
-            <p class="profile-id">Student ID: <strong>{{ current_user.student_id }}</strong></p>
+            <p class="profile-id" style="color: #4f46e5 !important;">Student ID: <strong style="color: #4f46e5 !important;">{{ current_user.student_id }}</strong></p>
             {% endif %}
         </div>
         
         <div class="profile-card profile-form-card">
             <h2 class="card-title">Edit Profile</h2>
-            <form method="post" action="{{ url_for('student_details') }}" class="profile-form">
+            <form method="post" action="{{ url_for('student_details') }}" class="profile-form" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="full_name">Full Name</label>
@@ -53,4 +65,105 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const profilePhotoUpload = document.getElementById('profilePhotoUpload');
+    const profilePhoto = document.getElementById('profilePhoto');
+    const avatarContainer = document.getElementById('avatarContainer');
+    const profilePhotoLabel = document.getElementById('profilePhotoLabel');
+    
+    // Force profile text visibility based on theme
+    function forceProfileVisibility() {
+        const isDarkMode = document.body.classList.contains('theme-dark');
+        const profileName = document.querySelector('.profile-name');
+        const profileEmail = document.querySelector('.profile-email');
+        const profileId = document.querySelector('.profile-id');
+        const profileIdStrong = document.querySelector('.profile-id strong');
+        
+        if (isDarkMode) {
+            // Dark mode colors
+            if (profileName) profileName.style.color = '#ffffff !important';
+            if (profileEmail) profileEmail.style.color = '#e2e8f0 !important';
+            if (profileId) profileId.style.color = '#c4b5fd !important';
+            if (profileIdStrong) profileIdStrong.style.color = '#c4b5fd !important';
+        } else {
+            // Light mode colors
+            if (profileName) profileName.style.color = '#1e293b !important';
+            if (profileEmail) profileEmail.style.color = '#64748b !important';
+            if (profileId) profileId.style.color = '#4f46e5 !important';
+            if (profileIdStrong) profileIdStrong.style.color = '#4f46e5 !important';
+        }
+    }
+    
+    // Apply visibility on load
+    forceProfileVisibility();
+    
+    // Watch for theme changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                forceProfileVisibility();
+            }
+        });
+    });
+    
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+    
+    if (profilePhotoUpload) {
+        profilePhotoUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, JPEG, or PNG).');
+                    return;
+                }
+                
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    
+                    // Update or create profile photo
+                    if (profilePhoto) {
+                        profilePhoto.src = imageUrl;
+                    } else {
+                        // Remove avatar text and add image
+                        const avatarText = avatarContainer.querySelector('.avatar-text');
+                        if (avatarText) {
+                            avatarText.remove();
+                        }
+                        
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        img.alt = 'Profile Photo';
+                        img.className = 'profile-photo';
+                        img.id = 'profilePhoto';
+                        avatarContainer.appendChild(img);
+                    }
+                    
+                    // Add has-photo class to avatar container
+                    avatarContainer.classList.add('has-photo');
+                    
+                    // Update button text
+                    if (profilePhotoLabel) {
+                        profilePhotoLabel.textContent = 'Change Profile Photo';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
