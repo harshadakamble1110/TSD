@@ -5,7 +5,7 @@
     <a href="{{ url_for('enrolled_course', course_id=course.id) }}">{{ course.name }}</a> / Result
 </nav>
 <div class="quiz-result-card">
-    <div class="score">{{ score_percent }}%</div>
+    <div class="score" style="color: #000000 !important; font-size: 3rem !important; font-weight: 800 !important; background: #ffffff !important; padding: 10px !important; border: 3px solid #000000 !important; border-radius: 10px !important; display: inline-block !important; -webkit-text-fill-color: #000000 !important; text-fill-color: #000000 !important; background-clip: initial !important; -webkit-background-clip: initial !important;">{{ score_percent }}%</div>
     <p class="message">Congratulations! You have got {{ score_percent }}%.</p>
 </div>
 <div class="result-list">

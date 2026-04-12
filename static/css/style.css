@@ -1533,12 +1533,12 @@ body::before {
 .auth-links {
     text-align: center;
     margin-top: 2rem;
-    color: #6b7280 !important;
+    color: #000000 !important;
     font-size: 0.9rem;
 }
 
 .auth-links a {
-    color: #4f46e5 !important;
+    color: #000000 !important;
     text-decoration: none;
     font-weight: 500;
 }
@@ -3203,6 +3203,8 @@ body.theme-dark button:hover {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: #4f46e5 !important;
+    /* Fallback for browsers that don't support background-clip */
 }
 
 .quiz-result-card .message {
