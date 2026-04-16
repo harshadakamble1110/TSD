@@ -29,7 +29,31 @@
         {% for course in courses %}
         <a href="{{ url_for('course_detail', course_id=course.id) }}" class="course-card">
             <div class="course-icon">
-                <i class="fas fa-graduation-cap"></i>
+                {% if 'Computer' in course.name or 'computer' in course.name %}
+                    <i class="fas fa-desktop"></i>
+                {% elif 'programming' in course.name.lower() or 'Programming' in course.name or 'code' in course.name.lower() %}
+                    <i class="fas fa-code"></i>
+                {% elif 'web' in course.name.lower() or 'Web' in course.name or 'HTML' in course.name or 'CSS' in course.name or 'JavaScript' in course.name %}
+                    <i class="fas fa-laptop-code"></i>
+                {% elif 'design' in course.name.lower() or 'Design' in course.name %}
+                    <i class="fas fa-palette"></i>
+                {% elif 'business' in course.name.lower() or 'Business' in course.name %}
+                    <i class="fas fa-briefcase"></i>
+                {% elif 'data' in course.name.lower() or 'science' in course.name.lower() or 'Data' in course.name or 'Science' in course.name %}
+                    <i class="fas fa-database"></i>
+                {% elif 'network' in course.name.lower() or 'Network' in course.name %}
+                    <i class="fas fa-network-wired"></i>
+                {% elif 'security' in course.name.lower() or 'Security' in course.name or 'cyber' in course.name.lower() %}
+                    <i class="fas fa-shield-alt"></i>
+                {% elif 'mobile' in course.name.lower() or 'Mobile' in course.name or 'app' in course.name.lower() %}
+                    <i class="fas fa-mobile-alt"></i>
+                {% elif 'cloud' in course.name.lower() or 'Cloud' in course.name %}
+                    <i class="fas fa-cloud"></i>
+                {% elif 'ai' in course.name.lower() or 'AI' in course.name or 'machine' in course.name.lower() %}
+                    <i class="fas fa-brain"></i>
+                {% else %}
+                    <i class="fas fa-laptop"></i>
+                {% endif %}
             </div>
             <div class="course-body">
                 <h3>{{ course.name }}</h3>

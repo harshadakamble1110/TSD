@@ -941,12 +941,62 @@ body::before {
     display: flex;
     align-items: center;
     gap: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+    border-color: var(--primary);
+}
+
+.course-card:hover::before {
+    transform: scaleX(1);
 }
 
 .course-icon {
-    font-size: 2.5rem;
-    color: var(--primary-light);
-    animation: bounce 2s ease-in-out infinite;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white !important;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+}
+
+.course-icon i {
+    color: white !important;
+}
+
+.course-card:hover .course-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
 }
 
 .course-body {
@@ -2709,26 +2759,290 @@ body.theme-dark button:hover {
 .course-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 24px;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-    display: block;
-    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    min-height: 380px;
+}
+
+.course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
 }
 
 .course-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow);
+    transform: translateY(-8px);
+    box-shadow: 0 24px 48px rgba(99, 102, 241, 0.18);
+    border-color: var(--primary);
 }
 
-.course-card .thumb {
-    height: 140px;
-    background: linear-gradient(135deg, var(--surface2), var(--primary));
-    opacity: 0.9;
+.course-card:hover::before {
+    transform: scaleX(1);
+}
+
+.course-card:hover .action-arrow {
+    transform: translateX(4px);
+}
+
+/* Course Header */
+.course-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem 1.5rem 1rem;
     position: relative;
+}
+
+.level-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.level-badge.beginner {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.level-badge.intermediate {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.level-badge.advanced {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+/* Course Content */
+.course-content {
+    padding: 0 1.5rem 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.course-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    flex: 1;
+}
+
+.course-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.meta-item i {
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+/* Course Footer */
+.course-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.course-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stars {
+    display: flex;
+    gap: 0.2rem;
+}
+
+.stars i {
+    color: #fbbf24;
+    font-size: 0.9rem;
+}
+
+.rating-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.course-students {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.course-students i {
+    color: var(--primary);
+}
+
+/* Course Action */
+.course-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.05));
+    border-top: 1px solid var(--border);
+    position: relative;
+}
+
+/* Attractive Enroll Button */
+.enroll-button {
+    position: relative;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
     overflow: hidden;
-    border-radius: 16px 16px 0 0;
+    min-width: 140px;
+    height: 44px;
+}
+
+.enroll-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.enroll-button:hover::before {
+    left: 100%;
+}
+
+.enroll-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+}
+
+.button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+.button-content i {
+    color: white !important;
+    font-size: 1.1rem;
+}
+
+.button-content span {
+    color: white !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+.button-glow {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.enroll-button:hover .button-glow {
+    opacity: 1;
+}
+
+/* Price Badge */
+.price-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 0.5rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.price-badge i {
+    color: white !important;
+    font-size: 0.9rem;
+}
+
+.price-badge span {
+    color: white !important;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(16, 185, 129, 0.5);
+    }
+}
+
+/* Course card hover effects */
+.course-card:hover .enroll-button {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.course-card:hover .price-badge {
+    transform: scale(1.05);
 }
 
 /* Modern Course Thumbnail Designs */
@@ -2834,28 +3148,7 @@ body.theme-dark button:hover {
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
 }
 
-/* Animations */
-@keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(10px, -10px) rotate(120deg); }
-    66% { transform: translate(-5px, 5px) rotate(240deg); }
-}
-
-@keyframes float-shape {
-    0%, 100% { 
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.6;
-    }
-    50% { 
-        transform: translateY(-10px) rotate(180deg);
-        opacity: 0.9;
-    }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.05); }
-}
+/* Course card animations removed */
 
 .course-card .body {
     padding: 1.25rem;
@@ -4660,6 +4953,69 @@ body.theme-dark .profile-info-card .profile-id strong {
 /* Search Results */
 .search-results-section {
     margin-top: 2rem;
+}
+
+/* Search Results Course Cards */
+.search-results-section .course-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.search-results-section .course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.search-results-section .course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+    border-color: var(--primary);
+}
+
+.search-results-section .course-card:hover::before {
+    transform: scaleX(1);
+}
+
+.search-results-section .course-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white !important;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+}
+
+.search-results-section .course-icon i {
+    color: white !important;
+}
+
+.search-results-section .course-card:hover .course-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
 }
 .section-title {
     font-size: 1.5rem;
