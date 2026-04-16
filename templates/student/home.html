@@ -61,16 +61,35 @@
     <div class="categories-grid">
         {% for cat in categories %}
         <a href="{{ url_for('courses_list', category_slug=cat.slug) }}" class="category-card">
-            <div class="category-image">
-                <div class="category-icon">
-                    <i class="fas {{ cat.icon or 'fa-book' }}"></i>
-                </div>
+            <div class="icon">
+                {% if 'web' in cat.name.lower() or 'development' in cat.name.lower() %}
+                    <i class="fas fa-laptop-code"></i>
+                {% elif 'data' in cat.name.lower() or 'database' in cat.name.lower() or 'science' in cat.name.lower() %}
+                    <i class="fas fa-database"></i>
+                {% elif 'mobile' in cat.name.lower() or 'app' in cat.name.lower() %}
+                    <i class="fas fa-mobile-alt"></i>
+                {% elif 'design' in cat.name.lower() or 'creative' in cat.name.lower() or 'art' in cat.name.lower() %}
+                    <i class="fas fa-palette"></i>
+                {% elif 'security' in cat.name.lower() or 'cyber' in cat.name.lower() %}
+                    <i class="fas fa-shield-alt"></i>
+                {% elif 'cloud' in cat.name.lower() or 'aws' in cat.name.lower() or 'azure' in cat.name.lower() %}
+                    <i class="fas fa-cloud"></i>
+                {% elif 'ai' in cat.name.lower() or 'machine' in cat.name.lower() or 'intelligence' in cat.name.lower() %}
+                    <i class="fas fa-brain"></i>
+                {% elif 'programming' in cat.name.lower() or 'coding' in cat.name.lower() or 'software' in cat.name.lower() %}
+                    <i class="fas fa-code"></i>
+                {% elif 'network' in cat.name.lower() or 'infrastructure' in cat.name.lower() %}
+                    <i class="fas fa-network-wired"></i>
+                {% elif 'business' in cat.name.lower() or 'management' in cat.name.lower() %}
+                    <i class="fas fa-briefcase"></i>
+                {% else %}
+                    <i class="fas fa-graduation-cap"></i>
+                {% endif %}
             </div>
-            <div class="category-content">
-                <h3>{{ cat.name }}</h3>
-                <div class="category-stats">
-                    <span class="course-count">{{ cat.courses.count() }} courses</span>
-                </div>
+            <h3>{{ cat.name }}</h3>
+            <p>Master {{ cat.name.lower() }} with comprehensive courses and hands-on projects</p>
+            <div class="category-stats">
+                <span class="course-count"><i class="fas fa-book"></i> {{ cat.courses.count() }} courses</span>
             </div>
         </a>
         {% endfor %}
